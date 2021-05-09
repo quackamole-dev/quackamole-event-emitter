@@ -1,6 +1,6 @@
 {
   "name": "quackamole-event-emitter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Simple EventEmitter for non-dom events",
   "main": "dist/event-emitter.js",
   "types": "dist/event-emitter.d.ts",

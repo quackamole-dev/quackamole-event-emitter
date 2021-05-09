@@ -24,7 +24,7 @@ export class EventEmitter {
     this.events = new Map();
   }
 
-  on(type: string, listener: IEventListener, options: IEventListenerOptions = {}) {
+  on(type: string, listener: IEventListener, options: IEventListenerOptions = {}): void {
     let listenerObjMap: Map<number, IEventListenerObject> | undefined = this.events.get(type);
 
     if (!listenerObjMap) {
@@ -36,12 +36,12 @@ export class EventEmitter {
     listenerObjMap.set(this.getKey(wrapper), wrapper);
   }
 
-  off(type: string, listener: IEventListener, options: IEventListenerOptions = {}) {
+  off(type: string, listener: IEventListener, options: IEventListenerOptions = {}): void {
     const key = this.getKey({type, listener, options} as IEventListenerObject);
     this.events.get(type)?.delete(key);
   }
 
-  emit(type: string, data?: unknown) {
+  emit(type: string, data?: unknown): void {
     const listenerObjMap: Map<number, IEventListenerObject> | undefined = this.events.get(type);
     if (listenerObjMap) {
       for (const [key, obj] of listenerObjMap) {
