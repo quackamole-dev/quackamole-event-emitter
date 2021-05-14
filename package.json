@@ -11,7 +11,7 @@
   "scripts": {
     "lint": "eslint src",
     "build": "tsc",
-    "test": "nyc --reporter=text-summary mocha --require ts-node/register 'src/**/*spec.{ts,tsx}'"
+    "test": "nyc --reporter=json-summary mocha --require ts-node/register 'src/**/*spec.{ts,tsx}'"
   },
   "keywords": [],
   "author": "Andreas Schoch",
