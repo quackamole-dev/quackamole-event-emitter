@@ -34,16 +34,14 @@ jobs:
           data = data.get('total')
           f.close()
 
-        gh_env = os.environ.get('GITHUB_ENV')
-
-        print('GITHUB_ENV', gh_env)
-
         print(f'data: {data}')
         parts = ['lines', 'statements', 'functions', 'branches']
         summary = sum([data.get(p).get('pct') for p in parts]) / len(parts)
-        os.environ['COVERAGE'] = round(summary, 2)
-        print(os.environ.get('COVERAGE'))
 
+        with open(os.environ.get('GITHUB_ENV'), "w") as gh_env:
+          gh_env.write(f'COVERAGE={round(summary, 2)}')
+
+        print(os.environ)
 
 #        SUMMARY="$(npm run test -- --coverageReporters='text-summary' | tail -2 | head -1)"
 #        TOKENS=($SUMMARY)
