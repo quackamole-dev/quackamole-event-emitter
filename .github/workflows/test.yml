@@ -2,9 +2,10 @@ name: Tests
 on: [push]
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - run: npm i
-      - run: npm run test-with-coverage
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+    - run: npm ci
+    - run: npm run test-with-coverage
