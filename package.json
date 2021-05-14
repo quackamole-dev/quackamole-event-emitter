@@ -1,6 +1,6 @@
 {
   "name": "quackamole-event-emitter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Simple EventEmitter for non-dom events",
   "main": "dist/event-emitter.js",
   "types": "dist/event-emitter.d.ts",
@@ -11,8 +11,7 @@
   "scripts": {
     "lint": "eslint src",
     "build": "tsc",
-    "test": "mocha --require ts-node/register 'src/**/*spec.{ts,tsx}'",
-    "test-with-coverage": "nyc --reporter=text mocha --require ts-node/register 'src/**/*spec.{ts,tsx}'"
+    "test": "nyc --reporter=json-summary mocha --require ts-node/register 'src/**/*spec.{ts,tsx}'"
   },
   "keywords": [],
   "author": "Andreas Schoch",
