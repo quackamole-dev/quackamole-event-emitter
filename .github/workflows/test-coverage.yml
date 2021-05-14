@@ -41,6 +41,10 @@ jobs:
         with open(os.environ.get('GITHUB_ENV'), "w") as gh_env:
           gh_env.write(f'COVERAGE={round(summary, 2)}')
 
+        gh_ref_paths = os.environ.get('GITHUB_REF').split('/')
+        branch_name = f'{gh_ref_paths[1]}_{gh_ref_paths[2]}'
+        print('branch name', branch_name)
+
         print(os.environ)
 
 #        SUMMARY="$(npm run test -- --coverageReporters='text-summary' | tail -2 | head -1)"
@@ -53,14 +57,14 @@ jobs:
 #        echo $BRANCH_NAME
 #        echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
 
-#    - if: ${{ matrix.node-version == '14.x' }}
-#      name: Create the Badge
-#      uses: schneegans/dynamic-badges-action@v1.0.0
-#      with:
-#        auth: ${{ secrets.GIST_SECRET }}
-#        gistID: 63f6547acd916bfb217f065a6357f29a
-#        filename: quackamole-event-emitter__${{ env.BRANCH }}.json
-#        label: Test Coverage
-#        message: ${{ env.COVERAGE }}
-#        color: green
-#        namedLogo: mocha
+    - if: ${{ matrix.node-version == '14.x' }}
+      name: Create the Badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: 63f6547acd916bfb217f065a6357f29a
+        filename: quackamole-event-emitter__${{ env.BRANCH }}.json
+        label: Test Coverage
+        message: ${{ env.COVERAGE }}
+        color: green
+        namedLogo: mocha
