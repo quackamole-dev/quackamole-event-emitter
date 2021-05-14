@@ -1,7 +1,6 @@
-name: Build Status
+name: Test with Coverage
 on:
   push:
-    branches: [ main, github-actions-experimenting ]
   pull_request:
     branches: [ main ]
 jobs:
@@ -20,10 +19,11 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - run: npm ci
-    - run: npm run test
 
-    - if: ${{ matrix.node-version == '14.x' }}
-      name: Get Coverage for badge
+    - name: Test the branch
+      run: npm run test
+
+    - name: Get Coverage for badge
       shell: python
       run: |
         import os
@@ -42,28 +42,16 @@ jobs:
         gh_ref_paths = os.environ.get('GITHUB_REF').split('/')
         branch_name = f'{gh_ref_paths[1]}_{gh_ref_paths[2]}'
 
+        # update github env file
         with open(os.environ.get('GITHUB_ENV'), "w") as gh_env:
           gh_env.write(f'COVERAGE={round(summary, 2)}\n')
           gh_env.write(f'BRANCH={branch_name}\n')
 
-        print(os.environ)
-
-#        SUMMARY="$(npm run test -- --coverageReporters='text-summary' | tail -2 | head -1)"
-#        TOKENS=($SUMMARY)
-#        echo "COVERAGE=$(echo ${TOKENS[2]})" >> $GITHUB_ENV
-#        REF=${{ github.ref }}
-#        echo "github.ref: $REF"
-#        IFS='/' read -ra PATHS <<< "$REF"
-#        BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
-#        echo $BRANCH_NAME
-#        echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
-
-    - if: ${{ matrix.node-version == '14.x' }}
-      name: Create the Badge
+    - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
         auth: ${{ secrets.GIST_SECRET }}
-        gistID: 63f6547acd916bfb217f065a6357f29a
+        gistID: 63f6547acd916bfb217f065a6357f29a  # https://gist.github.com/andreas-schoch/63f6547acd916bfb217f065a6357f29a
         filename: quackamole-event-emitter__${{ env.BRANCH }}.json
         label: Test Coverage
         message: ${{ env.COVERAGE }}
