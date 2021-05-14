@@ -43,8 +43,10 @@ jobs:
         branch_name = f'{gh_ref_paths[1]}_{gh_ref_paths[2]}'
 
         with open(os.environ.get('GITHUB_ENV'), "w") as gh_env:
-          gh_env.write(f'COVERAGE={round(summary, 2)}')
-          gh_env.write(f'BRANCH=branch_name')
+          gh_env.write(f'COVERAGE={round(summary, 2)}\n')
+          gh_env.write(f'BRANCH={branch_name}\n')
+
+        print(os.environ)
 
 #        SUMMARY="$(npm run test -- --coverageReporters='text-summary' | tail -2 | head -1)"
 #        TOKENS=($SUMMARY)
