@@ -34,18 +34,17 @@ jobs:
           data = data.get('total')
           f.close()
 
-        print(f'data: {data}')
+        # get overall coverage
         parts = ['lines', 'statements', 'functions', 'branches']
         summary = sum([data.get(p).get('pct') for p in parts]) / len(parts)
 
-        with open(os.environ.get('GITHUB_ENV'), "w") as gh_env:
-          gh_env.write(f'COVERAGE={round(summary, 2)}')
-
+        # get badge identifier
         gh_ref_paths = os.environ.get('GITHUB_REF').split('/')
         branch_name = f'{gh_ref_paths[1]}_{gh_ref_paths[2]}'
-        print('branch name', branch_name)
 
-        print(os.environ)
+        with open(os.environ.get('GITHUB_ENV'), "w") as gh_env:
+          gh_env.write(f'COVERAGE={round(summary, 2)}')
+          gh_env.write(f'BRANCH=branch_name')
 
 #        SUMMARY="$(npm run test -- --coverageReporters='text-summary' | tail -2 | head -1)"
 #        TOKENS=($SUMMARY)
