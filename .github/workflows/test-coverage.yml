@@ -36,7 +36,7 @@ jobs:
 
         print(f'data: {data}')
         parts = ['lines', 'statements', 'functions', 'branches']
-        summary = sum([mydict.get(p).get('pct') for p in parts]) / len(parts)
+        summary = sum([data.get(p).get('pct') for p in parts]) / len(parts)
         print(f'summary: {summary}')
 
 #        SUMMARY="$(npm run test -- --coverageReporters='text-summary' | tail -2 | head -1)"
