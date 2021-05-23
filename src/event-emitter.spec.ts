@@ -1,7 +1,7 @@
-import chai from 'chai';
+import chai, {expect} from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import {EventEmitter} from './event-emitter';
+import {EventEmitter, IEvent} from './event-emitter';
 
 chai.use(sinonChai);
 chai.should();
@@ -82,8 +82,42 @@ describe(EventEmitter.name, () => {
     emitter.emit('event1', 'by-event1');
     emitter.emit('event2', 'by-event2');
 
-    spy.getCall(0).should.have.been.calledWithExactly({type: 'event1', data: 'by-event1'});
-    spy.getCall(1).should.have.been.calledWithExactly({type: 'event1', data: 'by-event1'});
-    spy.getCall(2).should.have.been.calledWithExactly({type: 'event2', data: 'by-event2'});
+    spy.getCall(0).should.have.been.calledWithMatch({type: 'event1', data: 'by-event1'});
+    spy.getCall(1).should.have.been.calledWithMatch({type: 'event1', data: 'by-event1'});
+    spy.getCall(2).should.have.been.calledWithMatch({type: 'event2', data: 'by-event2'});
+  });
+
+  it('should wait for synchronous event chain to resolve', async () => {
+    const emitter = new EventEmitter();
+    emitter.on('ping', (evt: IEvent) => emitter.emit('pong', evt.data + ' world'));
+    const onPing: Promise<string> = emitter.onAsync<string>('pong', (evt: IEvent) => evt.asyncHandle?.resolve(evt.data));
+
+    emitter.emit('ping', 'hello');
+    const pingPong: string = await onPing;
+
+    expect(pingPong).to.equal('hello world');
+  });
+
+  it('should wait for asynchronous event chain to resolve', async () => {
+    const emitter = new EventEmitter();
+    emitter.on('ping', (evt: IEvent) => {
+      setTimeout(() => emitter.emit('pong', evt.data + ' async world'), 1);
+    });
+
+    emitter.emit('ping', 'hello');
+    const pingPong: string = await emitter.onAsync<string>('pong', (evt: IEvent) => evt.asyncHandle?.resolve(evt.data));
+
+    expect(pingPong).to.equal('hello async world');
+  });
+
+  it('should call listeners attached with onAsync() only once', () => {
+    const spy = sinon.spy((evt: IEvent) => evt.asyncHandle?.resolve(null));
+
+    const emitter: EventEmitter = new EventEmitter();
+    emitter.onAsync('event', spy);
+    emitter.emit('event');
+    emitter.emit('event');
+
+    spy.should.have.been.calledOnce;
   });
 });
