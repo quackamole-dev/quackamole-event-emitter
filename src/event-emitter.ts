@@ -1,6 +1,7 @@
 export interface IEvent {
   type: string;
   data?: unknown;
+  asyncHandle?: IEventListenerAsyncHandle<unknown>;
 }
 
 export interface IEventListener {
@@ -11,10 +12,16 @@ export interface IEventListenerObject {
   type: string;
   listener: IEventListener;
   options: IEventListenerOptions;
+  asyncHandle?: IEventListenerAsyncHandle<unknown>;
 }
 
 export interface IEventListenerOptions {
   once?: boolean;
+}
+
+interface IEventListenerAsyncHandle<T> {
+  resolve: (value: (T | PromiseLike<T>)) => void;
+  reject: (value: (unknown | PromiseLike<unknown>)) => void;
 }
 
 export class EventEmitter {
@@ -25,15 +32,13 @@ export class EventEmitter {
   }
 
   on(type: string, listener: IEventListener, options: IEventListenerOptions = {}): void {
-    let listenerObjMap: Map<number, IEventListenerObject> | undefined = this.events.get(type);
+    this.registerListener<never>(type, listener, options);
+  }
 
-    if (!listenerObjMap) {
-      listenerObjMap = new Map();
-      this.events.set(type, listenerObjMap);
-    }
-
-    const wrapper: IEventListenerObject = {type, listener, options};
-    listenerObjMap.set(this.getKey(wrapper), wrapper);
+  onAsync<T>(type: string, listener: IEventListener, options: IEventListenerOptions = {}): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      this.registerListener<T>(type, listener, options, {resolve, reject});
+    });
   }
 
   off(type: string, listener: IEventListener, options: IEventListenerOptions = {}): void {
@@ -44,11 +49,26 @@ export class EventEmitter {
   emit(type: string, data?: unknown): void {
     const listenerObjMap: Map<number, IEventListenerObject> | undefined = this.events.get(type);
     if (listenerObjMap) {
-      for (const [key, obj] of listenerObjMap) {
-        if (obj.options.once) listenerObjMap.delete(key);
-        obj.listener({type, data} as IEvent);
+      for (const [key, {options, asyncHandle, listener}] of listenerObjMap) {
+        if (options.once || asyncHandle) listenerObjMap.delete(key);
+        listener({type, data, asyncHandle} as IEvent);
       }
     }
+  }
+
+  protected registerListener<T>(type: string,
+                                listener: IEventListener,
+                                options: IEventListenerOptions,
+                                asyncHandle?: IEventListenerAsyncHandle<T>): void {
+    let listenerObjMap: Map<number, IEventListenerObject> | undefined = this.events.get(type);
+
+    if (!listenerObjMap) {
+      listenerObjMap = new Map();
+      this.events.set(type, listenerObjMap);
+    }
+
+    const wrapper = {type, listener, options, asyncHandle} as IEventListenerObject;
+    listenerObjMap.set(this.getKey(wrapper), wrapper);
   }
 
   protected getKey({type, listener, options}: IEventListenerObject): number {
