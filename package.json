@@ -1,6 +1,6 @@
 {
   "name": "quackamole-event-emitter",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Simple EventEmitter for non-dom events",
   "main": "dist/event-emitter.js",
   "types": "dist/event-emitter.d.ts",
@@ -24,15 +24,15 @@
     "@types/chai": "^4.2.18",
     "@types/mocha": "^8.2.2",
     "@types/sinon-chai": "^3.2.5",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
     "chai": "^4.3.4",
-    "eslint": "^7.26.0",
+    "eslint": "^7.27.0",
     "mocha": "^8.4.0",
     "nyc": "^15.1.0",
     "sinon": "^10.0.0",
     "sinon-chai": "^3.6.0",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.0.0",
     "typescript": "^4.2.4"
   },
   "repository": "github:quackamole-dev/quackamole-event-emitter"
